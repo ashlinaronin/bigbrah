@@ -1,7 +1,8 @@
-var canvas, context, video;
+var canvas, context, video, a;
 
 createElements();
 initWebcam();
+
 
 function initWebcam() {
     navigator.getUserMedia = (navigator.getUserMedia ||
@@ -14,32 +15,43 @@ function initWebcam() {
 }
 
 function webcamSuccessCallback(stream) {
-    console.log('got a stream brah');
     video.src = window.URL.createObjectURL(stream);
-    console.dir(video);
+    video.addEventListener('canplay', function() {
+        takePic(stream);
+    }, true);
 }
 
 function webcamErrorCallback(e) {
     console.log('sorry: ', e);
 }
 
+function takePic(stream) {
+    context.drawImage(video, 0, 0);
+    var dataURL = canvas.toDataURL('image/png');
 
+    // got pic, do something with it here
+
+    // a.download = 'screenshot-front.png';
+    // a.href = dataURL;
+    // location.replace(a.href);
+}
 
 
 
 
 function createElements() {
+    // None of these elements are in the DOM
     canvas = document.createElement('canvas');
-    document.body.appendChild(canvas);
-    // canvas.style.display = 'none';
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     context = canvas.getContext('2d');
-
     video = document.createElement('video');
-    document.body.appendChild(video);
+    a = document.createElement('a');
 }
+
+
+
+
 
 function say(whatToSay) {
     var utterance = new SpeechSynthesisUtterance();

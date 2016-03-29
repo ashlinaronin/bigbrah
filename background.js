@@ -8,6 +8,7 @@ bigBro.context = bigBro.canvas.getContext('2d');
 bigBro.webcam = document.querySelector('video#webcam');
 
 chrome.browserAction.onClicked.addListener(function(tab) {
+    // options for cdm are "screen", "window" or "tab"
     chrome.desktopCapture.chooseDesktopMedia(['screen'], function(streamId) {
         setupWebcam(streamId);
     });
@@ -55,7 +56,7 @@ function gotStream(stream) {
 function takePic(stream) {
     bigBro.context.drawImage(bigBro.webcam, 0, 0);
     var dataURL = bigBro.canvas.toDataURL('image/png');
-    dataURIToBlob(dataURL, 'image/png', downloadScreenshot);
+    downloadScreenshot(dataURL);
 }
 
 function periodicallyTakePics(stream, interval) {
@@ -64,8 +65,7 @@ function periodicallyTakePics(stream, interval) {
     }, interval);
 }
 
-function downloadScreenshot(blob) {
-    var objUrl = URL.createObjectURL(blob);
+function downloadScreenshot(objUrl) {
     chrome.downloads.download(
         { url: objUrl, filename: 'screenshot.png' },
         function(downloadId) {
@@ -73,17 +73,3 @@ function downloadScreenshot(blob) {
         }
     );
 }
-
-// from https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-var dataURIToBlob = function(dataURI, mimetype, cb) {
-    var binStr = atob( dataURI.split(',')[1] );
-    var len = binStr.length;
-    var arr = new Uint8Array(len);
-
-    for (var i = 0; i < len; ++i) {
-        arr[i] = binStr.charCodeAt(i);
-    }
-
-    var blob = new Blob([arr], {type: mimetype});
-    return cb(blob); // invoke cb with response
-};
