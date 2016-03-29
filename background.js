@@ -1,22 +1,14 @@
 var bigBro = {
     canvas: null,
     context: null,
-    webcam: null,
-    dataURL: null,
-    blob: null
+    webcam: null
 }
 bigBro.canvas = document.querySelector('canvas#selfie-canvas');
 bigBro.context = bigBro.canvas.getContext('2d');
 bigBro.webcam = document.querySelector('video#webcam');
 
-
 chrome.browserAction.onClicked.addListener(function(tab) {
-    console.log(tab.url + ' clicked me');
-
     chrome.desktopCapture.chooseDesktopMedia(['screen'], function(streamId) {
-        console.log(streamId);
-
-        // then call GUM with streamId
         setupWebcam(streamId);
     });
 });
@@ -27,6 +19,9 @@ function setupWebcam(streamId) {
         console.log('sorry no');
         return;
     }
+
+    bigBro.canvas.width = screen.width;
+    bigBro.canvas.height = screen.height;
 
     navigator.webkitGetUserMedia({
         audio: {
@@ -46,20 +41,21 @@ function setupWebcam(streamId) {
     }, gotStream, getUserMediaError);
 }
 
-
-function gotStream(stream) {
-    console.log('received local stream', stream);
-    takePic(stream);
-}
-
 function getUserMediaError(error) {
     console.log('navigator.webkitGetUserMedia() error: ', error);
 }
 
+function gotStream(stream) {
+    bigBro.webcam.src = URL.createObjectURL(stream);
+    bigBro.webcam.addEventListener('canplay', function() {
+        takePic(stream);
+    }, true);
+}
+
 function takePic(stream) {
     bigBro.context.drawImage(bigBro.webcam, 0, 0);
-    bigBro.dataURL = bigBro.canvas.toDataURL('image/png');
-    dataURIToBlob(bigBro.dataURL, 'image/png', downloadScreenshot);
+    var dataURL = bigBro.canvas.toDataURL('image/png');
+    dataURIToBlob(dataURL, 'image/png', downloadScreenshot);
 }
 
 function downloadScreenshot(blob) {
@@ -68,8 +64,6 @@ function downloadScreenshot(blob) {
         console.log("downloading, downloadId is:" + downloadId);
     });
 }
-
-
 
 // from https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
 var dataURIToBlob = function(dataURI, mimetype, cb) {
