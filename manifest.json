@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
 
-    "name": "Style Web",
-    "description": "This extension adds a sexy stylesheet to every page",
+    "name": "Big brah",
+    "description": "I'm totes watchin u breh",
     "version": "1.0",
 
     "background": {
@@ -28,6 +28,7 @@
     "permissions": [
         "activeTab",
         "desktopCapture",
-        "storage"
+        "storage",
+        "downloads"
     ]
 }
