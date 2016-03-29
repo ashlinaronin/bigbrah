@@ -5,6 +5,15 @@
     "description": "This extension adds a sexy stylesheet to every page",
     "version": "1.0",
 
+    "background": {
+        "persistent": false,
+        "page": "background.html"
+    },
+
+    "browser_action": {
+        "default_title": "Take a screenshot"
+    },
+
     "content_scripts": [
         {
             "matches": [
@@ -12,11 +21,13 @@
                 "https://*/"
             ],
             "css": ["sexystyles.css"],
-            "js": ["inject-styles.js"],
+            "js": ["content-script.js"],
             "run_at": "document_end"
         }
     ],
     "permissions": [
-        "activeTab"
+        "activeTab",
+        "desktopCapture",
+        "storage"
     ]
 }
