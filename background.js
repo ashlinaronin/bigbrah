@@ -24,12 +24,12 @@ function setupWebcam(streamId) {
     bigBro.canvas.height = screen.height;
 
     navigator.webkitGetUserMedia({
-        audio: {
-            mandatory: {
-                chromeMediaSource: 'desktop',
-                chromeMediaSourceId: streamId
-            }
-        },
+        // audio: {
+        //     mandatory: {
+        //         chromeMediaSource: 'desktop',
+        //         chromeMediaSourceId: streamId
+        //     }
+        // },
         video: {
             mandatory: {
                 chromeMediaSource: 'desktop',
@@ -58,11 +58,20 @@ function takePic(stream) {
     dataURIToBlob(dataURL, 'image/png', downloadScreenshot);
 }
 
+function periodicallyTakePics(stream, interval) {
+    setTimeout(function() {
+        takePic(stream);
+    }, interval);
+}
+
 function downloadScreenshot(blob) {
     var objUrl = URL.createObjectURL(blob);
-    chrome.downloads.download({url: objUrl}, function(downloadId) {
-        console.log("downloading, downloadId is:" + downloadId);
-    });
+    chrome.downloads.download(
+        { url: objUrl, filename: 'screenshot.png' },
+        function(downloadId) {
+            console.log("downloading, downloadId is:" + downloadId);
+        }
+    );
 }
 
 // from https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob

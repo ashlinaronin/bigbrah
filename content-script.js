@@ -1,8 +1,45 @@
-// Don't need DOMContentLoaded because the manifest file takes care of script execution order for us
-// replaceImages('https://media.glassdoor.com/sql/702495/pollinate-squarelogo-1432530572224.png');
+var canvas, context, video;
 
-say('hi');
+createElements();
+initWebcam();
 
+function initWebcam() {
+    navigator.getUserMedia = (navigator.getUserMedia ||
+                        navigator.webkitGetUserMedia ||
+                        navigator.mozGetUserMedia ||
+                        navigator.msGetUserMedia ||
+                        navigator.mediaDevices.getUserMedia);
+
+    navigator.getUserMedia({video: true, audio: false}, webcamSuccessCallback, webcamErrorCallback);
+}
+
+function webcamSuccessCallback(stream) {
+    console.log('got a stream brah');
+    video.src = window.URL.createObjectURL(stream);
+    console.dir(video);
+}
+
+function webcamErrorCallback(e) {
+    console.log('sorry: ', e);
+}
+
+
+
+
+
+
+function createElements() {
+    canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    // canvas.style.display = 'none';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    context = canvas.getContext('2d');
+
+    video = document.createElement('video');
+    document.body.appendChild(video);
+}
 
 function say(whatToSay) {
     var utterance = new SpeechSynthesisUtterance();
